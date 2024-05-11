@@ -11,10 +11,10 @@ library(ggthemes)
 # NEIGHBOURHOOD WEIGHTS
 #---------------------------------------------------------------
 # Import data for municipalities
-data_municipalities <- read.csv("_data/data_municipalities.csv")
+data_municipalities <- read.csv("../_data/data_municipalities.csv")
 
 # Import a shapefile for municipalities
-map_municipalities <- st_read("_data/shapefile/map_municipalities.shp")
+map_municipalities <- st_read("../_data/shapefile/map_municipalities.shp")
 
 # Plot the borders of municipalities
 plot(st_geometry(map_municipalities))
@@ -66,7 +66,7 @@ map_municipalities_with_data$splag_percent_vaccinated <-
 # HISTORICAL PARTITIONS OF POLAND
 #-------------------------------------------
 # Import a shapefile for historical partitions of Poland
-map_partitions <- st_read("_data/shapefile/map_partitions.shp")
+map_partitions <- st_read("../_data/shapefile/map_partitions.shp")
 
 # Plot historical borders between partitions
 ggplot() +
@@ -102,6 +102,6 @@ all_data <-
 names(all_data)[names(all_data) == 'mncplty_c'] <- 'municipality_code'
 names(all_data)[names(all_data) == 'mncplty_n'] <- 'municipality_name'
 
-write.csv(all_data, '_data/spatial_data.csv', row.names=FALSE)
+write.csv(all_data, '../_data/spatial_data.csv', row.names=FALSE)
 
-spatial_data <- read.csv('_data/spatial_data.csv')
+spatial_data <- read.csv('../_data/spatial_data.csv')
