@@ -1,0 +1,5 @@
+pysal
+spreg
+pandas
+numpy
+geopandas
