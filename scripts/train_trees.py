@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error
 from utils import split_x_and_y, load_train_and_valid_data, load_test_data, calculate_spatial_lag
@@ -57,8 +57,12 @@ def train_cross_validation(training_data: pd.DataFrame, shape_data: pd.DataFrame
 def main(args):
     if args.model == "rf":
         model = RandomForestRegressor(n_estimators=200, random_state=42)
+    elif args.model == "gbm":
+        model = GradientBoostingRegressor(n_estimators=200, random_state=42)
     else:
         model = XGBRegressor(n_estimators=200, random_state=42)
+        
+    model = GradientBoostingRegressor(n_estimators=200, random_state=42)
     shape_data = gpd.read_file("../_data/shapefile/map_municipalities.shp")
     data = load_train_and_valid_data("../_data/train_and_valid.csv")
     results = train_cross_validation(data, shape_data, model)
@@ -67,6 +71,6 @@ def main(args):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True, help="Model to train and test", choices=["rf", "xgboost"])
+    parser.add_argument("--model", type=str, required=True, help="Model to train and test", choices=["rf", "xgboost", "gbm"])
     args = parser.parse_args()
     main(args)
