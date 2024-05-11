@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error
 from utils import split_x_and_y, load_train_and_valid_data, load_test_data, calculate_spatial_lag
 from collections import OrderedDict
 import argparse
+import pickle
 
 
 def _test_model(model, shape_data):
@@ -71,6 +72,9 @@ def main(args):
     data_with_predictions, results = train_cross_validation(data, shape_data, model)
     results.to_csv(f"../_data/results_{args.model}.csv", index=False)
     
+    with open(f"../_data/model_{args.model}.pkl", "wb") as f:
+        pickle.dump(model, f)
+        
     test_data = load_test_data("../_data/test_sample.csv")
     test_data_copy = test_data.copy()
     test_data_copy = calculate_spatial_lag(test_data_copy, shape_data)
