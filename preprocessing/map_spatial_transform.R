@@ -87,6 +87,7 @@ ggplot() +
 
 # Check if partitions can be added
 municipalities_with_border <- st_join(map_municipalities, map_partitions)
+municipalities_with_border <- municipalities_with_border[!duplicated(municipalities_with_border$mncplty_c), ]
 
 #-------------------------------------------
 # FULL DATA JOIN
