@@ -66,7 +66,6 @@ def main(args):
     else:
         model = XGBRegressor(n_estimators=200, random_state=42)
         
-    model = GradientBoostingRegressor(n_estimators=200, random_state=42)
     shape_data = gpd.read_file("../_data/shapefile/map_municipalities.shp")
     data = load_train_and_valid_data("../_data/train_and_valid.csv")
     data_with_predictions, results = train_cross_validation(data, shape_data, model)
