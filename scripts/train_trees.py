@@ -14,7 +14,7 @@ def _test_model(model, shape_data):
     test_data = load_test_data("../_data/test_sample.csv")
     test_data = calculate_spatial_lag(test_data, shape_data)
     string_columns = test_data.select_dtypes(include=['object']).columns.tolist()
-    string_columns += ["county_code", "neighbors"]
+    string_columns += ["county_code", "neighbors", "municipality_code"]
     test_data.drop(string_columns, axis=1, inplace=True)
     X_test, y_test = split_x_and_y(test_data)
     predictions = model.predict(X_test)
@@ -26,16 +26,19 @@ def train_cross_validation(training_data: pd.DataFrame, shape_data: pd.DataFrame
     eval_scores = []
     eval_predictions = []
     test_scores = []
+    eval_dfs = []
     for voivodeship in unique_voivodeships:
         training_sample = training_data[training_data["voivodeship"] != voivodeship].copy()
         training_sample = calculate_spatial_lag(training_sample, shape_data)
         eval_sample = training_data[training_data["voivodeship"] == voivodeship].copy()
         eval_sample = calculate_spatial_lag(eval_sample, shape_data)
-        
+        training_sample.drop("neighbors", axis=1, inplace=True)
+        eval_sample.drop("neighbors", axis=1, inplace=True)
+        eval_dfs.append(eval_sample)
         assert voivodeship not in training_sample["voivodeship"], "Excluded voivodeship should not be present in the training sample"
         assert len(eval_sample["voivodeship"].unique()) == 1 and eval_sample["voivodeship"].unique()[0] == voivodeship, "Evaluation sample should contain only the excluded voivodeship"
         string_columns = training_sample.select_dtypes(include=['object']).columns.tolist()
-        string_columns += ["neighbors", "county_code"]
+        string_columns += ["county_code", "municipality_code"]
         training_sample.drop(string_columns, axis=1, inplace=True)
         eval_sample.drop(string_columns, axis=1, inplace=True)
         
@@ -55,9 +58,11 @@ def train_cross_validation(training_data: pd.DataFrame, shape_data: pd.DataFrame
         
         print(f"Voivodeship {voivodeship} | EVAL RMSE: {eval_rmse} | TEST RMSE: {test_rmse}")
     
-    training_data["prediction"] = eval_predictions
+    full_data = pd.concat(eval_dfs)
+    full_data.reset_index(drop=True, inplace=True,)
+    full_data["prediction"] = eval_predictions
     results = pd.DataFrame({"excluded_voivodeship": list(unique_voivodeships), "eval_rmse": eval_scores, "test_rmse": test_scores})
-    return training_data, results
+    return full_data, results
     
 def main(args):
     if args.model == "rf":
@@ -76,12 +81,11 @@ def main(args):
         pickle.dump(model, f)
         
     test_data = load_test_data("../_data/test_sample.csv")
-    test_data_copy = test_data.copy()
-    test_data_copy = calculate_spatial_lag(test_data_copy, shape_data)
-    string_columns = test_data_copy.select_dtypes(include=['object']).columns.tolist()
-    string_columns += ["county_code", "neighbors"]
-    test_data_copy.drop(string_columns, axis=1, inplace=True)
-    X_test, y_test = split_x_and_y(test_data_copy)
+    test_data = calculate_spatial_lag(test_data, shape_data)
+    string_columns = test_data.select_dtypes(include=['object']).columns.tolist()
+    string_columns += ["county_code", "neighbors", "municipality_code"]
+    test_data.drop(string_columns, axis=1, inplace=True)
+    X_test, y_test = split_x_and_y(test_data)
     predictions = model.predict(X_test)
     test_data["prediction"] = predictions
     
