@@ -14,7 +14,7 @@ def _test_model(model, shape_data):
     test_data = load_test_data("../_data/test_sample.csv")
     test_data = calculate_spatial_lag(test_data, shape_data)
     string_columns = test_data.select_dtypes(include=['object']).columns.tolist()
-    string_columns += ["county_code", "neighbors", "municipality_code"]
+    string_columns += ["county_code", "neighbors", "municipality_code", "municipality_code_old"]
     test_data.drop(string_columns, axis=1, inplace=True)
     X_test, y_test = split_x_and_y(test_data)
     predictions = model.predict(X_test)
@@ -38,7 +38,7 @@ def train_cross_validation(training_data: pd.DataFrame, shape_data: pd.DataFrame
         assert voivodeship not in training_sample["voivodeship"], "Excluded voivodeship should not be present in the training sample"
         assert len(eval_sample["voivodeship"].unique()) == 1 and eval_sample["voivodeship"].unique()[0] == voivodeship, "Evaluation sample should contain only the excluded voivodeship"
         string_columns = training_sample.select_dtypes(include=['object']).columns.tolist()
-        string_columns += ["county_code", "municipality_code"]
+        string_columns += ["county_code", "municipality_code", "municipality_code_old"]
         training_sample.drop(string_columns, axis=1, inplace=True)
         eval_sample.drop(string_columns, axis=1, inplace=True)
         
@@ -83,7 +83,7 @@ def main(args):
     test_data = load_test_data("../_data/test_sample.csv")
     test_data = calculate_spatial_lag(test_data, shape_data)
     string_columns = test_data.select_dtypes(include=['object']).columns.tolist()
-    string_columns += ["county_code", "neighbors", "municipality_code"]
+    string_columns += ["county_code", "neighbors", "municipality_code", "municipality_code_old"]
     test_data.drop(string_columns, axis=1, inplace=True)
     X_test, y_test = split_x_and_y(test_data)
     predictions = model.predict(X_test)
