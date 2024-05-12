@@ -3,3 +3,5 @@ spreg
 pandas
 numpy
 geopandas
+xgboost
+scikit-learn
